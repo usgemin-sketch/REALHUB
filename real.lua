@@ -1,30 +1,27 @@
 -- LocalScript: RealHub
--- Расположение: StarterPlayerScripts (или StarterGui)
--- Ждёт BindableEvent "AdminLoginSuccess" от скрипта LoginScreen,
--- после этого плавно появляется меню Real Hub.
+-- Загружается через loadstring
+-- После выполнения сразу показывает меню Real Hub
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
 -- ============ НАСТРОЙКИ ============
+
 local GAMES = {
-	{ Name = "San Diego", Icon = "rbxassetid://0" },
+	{
+		Name = "San Diego",
+		Icon = "rbxassetid://0"
+	},
 }
+
 -- ====================================
 
--- Событие связи между скриптами
-local loginSuccessEvent = ReplicatedStorage:FindFirstChild("AdminLoginSuccess")
-if not loginSuccessEvent then
-	loginSuccessEvent = Instance.new("BindableEvent")
-	loginSuccessEvent.Name = "AdminLoginSuccess"
-	loginSuccessEvent.Parent = ReplicatedStorage
-end
 
 -- ===================== ScreenGui =====================
+
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "RealHubGui"
 screenGui.ResetOnSpawn = false
@@ -32,13 +29,20 @@ screenGui.IgnoreGuiInset = true
 screenGui.DisplayOrder = 90
 screenGui.Parent = playerGui
 
+
+-- ===================== MAIN FRAME =====================
+
 local hubFrame = Instance.new("Frame")
 hubFrame.Name = "HubFrame"
 hubFrame.Size = UDim2.new(1, 0, 1, 0)
+hubFrame.Position = UDim2.new(0, 0, 0, 0)
 hubFrame.BackgroundColor3 = Color3.fromRGB(12, 12, 18)
 hubFrame.BackgroundTransparency = 1
-hubFrame.Visible = false
+hubFrame.Visible = true
 hubFrame.Parent = screenGui
+
+
+-- ===================== TITLE =====================
 
 local hubTitle = Instance.new("TextLabel")
 hubTitle.Name = "HubTitle"
@@ -53,15 +57,29 @@ hubTitle.Position = UDim2.new(0.5, 0, 0.12, 0)
 hubTitle.Size = UDim2.new(0, 400, 0, 60)
 hubTitle.Parent = hubFrame
 
+
 local hubTitleGradient = Instance.new("UIGradient")
+
 hubTitleGradient.Color = ColorSequence.new({
-	ColorSequenceKeypoint.new(0, Color3.fromRGB(120, 130, 255)),
-	ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 255, 255)),
+	ColorSequenceKeypoint.new(
+		0,
+		Color3.fromRGB(120, 130, 255)
+	),
+
+	ColorSequenceKeypoint.new(
+		1,
+		Color3.fromRGB(255, 255, 255)
+	),
 })
+
 hubTitleGradient.Rotation = 90
 hubTitleGradient.Parent = hubTitle
 
+
+-- ===================== SUBTITLE =====================
+
 local hubSubtitle = Instance.new("TextLabel")
+hubSubtitle.Name = "HubSubtitle"
 hubSubtitle.Text = "Выбери игру"
 hubSubtitle.Font = Enum.Font.Gotham
 hubSubtitle.TextSize = 18
@@ -73,7 +91,9 @@ hubSubtitle.Position = UDim2.new(0.5, 0, 0.12, 62)
 hubSubtitle.Size = UDim2.new(0, 300, 0, 26)
 hubSubtitle.Parent = hubFrame
 
--- Панель с играми снизу
+
+-- ===================== GAMES BAR =====================
+
 local gamesBar = Instance.new("Frame")
 gamesBar.Name = "GamesBar"
 gamesBar.AnchorPoint = Vector2.new(0.5, 1)
@@ -82,6 +102,7 @@ gamesBar.Size = UDim2.new(0, 900, 0, 150)
 gamesBar.BackgroundTransparency = 1
 gamesBar.Parent = hubFrame
 
+
 local gamesLayout = Instance.new("UIListLayout")
 gamesLayout.FillDirection = Enum.FillDirection.Horizontal
 gamesLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
@@ -89,10 +110,16 @@ gamesLayout.VerticalAlignment = Enum.VerticalAlignment.Center
 gamesLayout.Padding = UDim.new(0, 16)
 gamesLayout.Parent = gamesBar
 
+
+-- ===================== GAME CARDS =====================
+
 local gameCards = {}
 
+
 for i, gameData in ipairs(GAMES) do
+
 	local card = Instance.new("TextButton")
+
 	card.Name = "GameCard_" .. gameData.Name
 	card.Text = ""
 	card.Size = UDim2.new(0, 130, 0, 150)
@@ -102,9 +129,15 @@ for i, gameData in ipairs(GAMES) do
 	card.LayoutOrder = i
 	card.Parent = gamesBar
 
+
+	-- CARD CORNER
+
 	local cardCorner = Instance.new("UICorner")
 	cardCorner.CornerRadius = UDim.new(0, 14)
 	cardCorner.Parent = card
+
+
+	-- CARD STROKE
 
 	local cardStroke = Instance.new("UIStroke")
 	cardStroke.Color = Color3.fromRGB(90, 90, 255)
@@ -112,7 +145,11 @@ for i, gameData in ipairs(GAMES) do
 	cardStroke.Transparency = 1
 	cardStroke.Parent = card
 
+
+	-- ICON
+
 	local icon = Instance.new("ImageLabel")
+	icon.Name = "Icon"
 	icon.Image = gameData.Icon
 	icon.BackgroundTransparency = 1
 	icon.ImageTransparency = 1
@@ -121,7 +158,11 @@ for i, gameData in ipairs(GAMES) do
 	icon.Position = UDim2.new(0.5, 0, 0, 18)
 	icon.Parent = card
 
+
+	-- GAME NAME
+
 	local nameLabel = Instance.new("TextLabel")
+	nameLabel.Name = "GameName"
 	nameLabel.Text = gameData.Name
 	nameLabel.Font = Enum.Font.GothamBold
 	nameLabel.TextSize = 14
@@ -133,6 +174,7 @@ for i, gameData in ipairs(GAMES) do
 	nameLabel.TextWrapped = true
 	nameLabel.Parent = card
 
+
 	table.insert(gameCards, {
 		Card = card,
 		Stroke = cardStroke,
@@ -140,52 +182,207 @@ for i, gameData in ipairs(GAMES) do
 		Label = nameLabel,
 	})
 
+
+	-- ===================== HOVER =====================
+
 	card.MouseEnter:Connect(function()
-		TweenService:Create(card, TweenInfo.new(0.2), { Size = UDim2.new(0, 138, 0, 158) }):Play()
-		TweenService:Create(cardStroke, TweenInfo.new(0.2), { Transparency = 0.3 }):Play()
+
+		TweenService:Create(
+			card,
+			TweenInfo.new(
+				0.2,
+				Enum.EasingStyle.Quad,
+				Enum.EasingDirection.Out
+			),
+			{
+				Size = UDim2.new(0, 138, 0, 158)
+			}
+		):Play()
+
+
+		TweenService:Create(
+			cardStroke,
+			TweenInfo.new(0.2),
+			{
+				Transparency = 0.3
+			}
+		):Play()
+
 	end)
+
+
 	card.MouseLeave:Connect(function()
-		TweenService:Create(card, TweenInfo.new(0.2), { Size = UDim2.new(0, 130, 0, 150) }):Play()
-		TweenService:Create(cardStroke, TweenInfo.new(0.2), { Transparency = 1 }):Play()
+
+		TweenService:Create(
+			card,
+			TweenInfo.new(
+				0.2,
+				Enum.EasingStyle.Quad,
+				Enum.EasingDirection.Out
+			),
+			{
+				Size = UDim2.new(0, 130, 0, 150)
+			}
+		):Play()
+
+
+		TweenService:Create(
+			cardStroke,
+			TweenInfo.new(0.2),
+			{
+				Transparency = 1
+			}
+		):Play()
+
 	end)
+
+
+	-- ===================== CLICK =====================
 
 	card.MouseButton1Click:Connect(function()
-		-- Сюда позже добавишь свою логику (телепорт, смена карты и т.д.)
-		print("Выбрана игра: " .. gameData.Name)
 
-		local originalSize = UDim2.new(0, 130, 0, 150)
-		TweenService:Create(card, TweenInfo.new(0.08), { Size = UDim2.new(0, 118, 0, 138) }):Play()
+		print("[RealHub] Выбрана игра: " .. gameData.Name)
+
+
+		local originalSize =
+			UDim2.new(0, 130, 0, 150)
+
+
+		TweenService:Create(
+			card,
+			TweenInfo.new(
+				0.08,
+				Enum.EasingStyle.Quad,
+				Enum.EasingDirection.Out
+			),
+			{
+				Size = UDim2.new(0, 118, 0, 138)
+			}
+		):Play()
+
+
 		task.wait(0.08)
-		TweenService:Create(card, TweenInfo.new(0.12), { Size = originalSize }):Play()
+
+
+		TweenService:Create(
+			card,
+			TweenInfo.new(
+				0.12,
+				Enum.EasingStyle.Back,
+				Enum.EasingDirection.Out
+			),
+			{
+				Size = originalSize
+			}
+		):Play()
+
 	end)
+
 end
 
--- ===================== АНИМАЦИЯ ПОЯВЛЕНИЯ =====================
+
+-- ===================== FADE IN =====================
 
 local function fadeInHub()
-	hubFrame.Visible = true
-	local tweenInfo = TweenInfo.new(0.6, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 
-	TweenService:Create(hubFrame, tweenInfo, { BackgroundTransparency = 0 }):Play()
+	local tweenInfo = TweenInfo.new(
+		0.6,
+		Enum.EasingStyle.Quad,
+		Enum.EasingDirection.Out
+	)
+
+
+	-- Фон
+
+	TweenService:Create(
+		hubFrame,
+		tweenInfo,
+		{
+			BackgroundTransparency = 0
+		}
+	):Play()
+
+
 	task.wait(0.1)
-	TweenService:Create(hubTitle, tweenInfo, { TextTransparency = 0 }):Play()
+
+
+	-- Заголовок
+
+	TweenService:Create(
+		hubTitle,
+		tweenInfo,
+		{
+			TextTransparency = 0
+		}
+	):Play()
+
+
 	task.wait(0.1)
-	TweenService:Create(hubSubtitle, tweenInfo, { TextTransparency = 0 }):Play()
+
+
+	-- Подзаголовок
+
+	TweenService:Create(
+		hubSubtitle,
+		tweenInfo,
+		{
+			TextTransparency = 0
+		}
+	):Play()
+
 
 	task.wait(0.15)
-	for i, entry in ipairs(gameCards) do
+
+
+	-- Карточки
+
+	for _, entry in ipairs(gameCards) do
+
 		task.spawn(function()
-			local cardTween = TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
-			TweenService:Create(entry.Card, cardTween, { BackgroundTransparency = 0.05 }):Play()
-			TweenService:Create(entry.Icon, TweenInfo.new(0.4), { ImageTransparency = 0 }):Play()
-			TweenService:Create(entry.Label, TweenInfo.new(0.4), { TextTransparency = 0 }):Play()
+
+			local cardTween = TweenInfo.new(
+				0.4,
+				Enum.EasingStyle.Back,
+				Enum.EasingDirection.Out
+			)
+
+
+			TweenService:Create(
+				entry.Card,
+				cardTween,
+				{
+					BackgroundTransparency = 0.05
+				}
+			):Play()
+
+
+			TweenService:Create(
+				entry.Icon,
+				TweenInfo.new(0.4),
+				{
+					ImageTransparency = 0
+				}
+			):Play()
+
+
+			TweenService:Create(
+				entry.Label,
+				TweenInfo.new(0.4),
+				{
+					TextTransparency = 0
+				}
+			):Play()
+
 		end)
+
+
 		task.wait(0.08)
+
 	end
+
 end
 
--- ===================== ОЖИДАНИЕ СОБЫТИЯ =====================
 
-loginSuccessEvent.Event:Connect(function()
-	fadeInHub()
-end)
+-- ===================== START =====================
+
+fadeInHub()
