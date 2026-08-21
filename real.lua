@@ -1,7 +1,6 @@
 --// REAL HUB
---// Black / Orange
---// Minimize + Close + Drag
---// San Diego + Analiz
+--// Dark Glass / Orange
+--// No fullscreen overlay
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
@@ -11,7 +10,7 @@ local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
 --==================================================
--- ССЫЛКИ
+-- CONFIG
 --==================================================
 
 local SAN_DIEGO_URL =
@@ -20,13 +19,10 @@ local SAN_DIEGO_URL =
 local ANALIZ_URL =
 	"https://raw.githubusercontent.com/usgemin-sketch/REALHUB/refs/heads/main/analiz.lua"
 
-local ORANGE = Color3.fromRGB(255, 105, 20)
-local ORANGE_DARK = Color3.fromRGB(55, 25, 10)
-local BG = Color3.fromRGB(12, 12, 15)
-local PANEL = Color3.fromRGB(19, 19, 23)
+local ORANGE = Color3.fromRGB(255, 105, 25)
 
 --==================================================
--- УДАЛЯЕМ СТАРУЮ ВЕРСИЮ
+-- REMOVE OLD GUI
 --==================================================
 
 local oldGui = playerGui:FindFirstChild("RealHub")
@@ -47,26 +43,29 @@ gui.DisplayOrder = 200
 gui.Parent = playerGui
 
 --==================================================
--- ОСНОВНОЕ ОКНО
+-- MAIN WINDOW
 --==================================================
 
 local window = Instance.new("Frame")
 window.Name = "Window"
 window.AnchorPoint = Vector2.new(0.5, 0.5)
 window.Position = UDim2.fromScale(0.5, 0.5)
-window.Size = UDim2.fromOffset(520, 340)
-window.BackgroundColor3 = BG
+window.Size = UDim2.fromOffset(560, 350)
+
+-- Glass effect
+window.BackgroundColor3 = Color3.fromRGB(14, 14, 17)
+window.BackgroundTransparency = 0.12
 window.BorderSizePixel = 0
 window.Parent = gui
 
 local windowCorner = Instance.new("UICorner")
-windowCorner.CornerRadius = UDim.new(0, 14)
+windowCorner.CornerRadius = UDim.new(0, 16)
 windowCorner.Parent = window
 
 local windowStroke = Instance.new("UIStroke")
-windowStroke.Color = ORANGE
+windowStroke.Color = Color3.fromRGB(255, 105, 25)
 windowStroke.Thickness = 1
-windowStroke.Transparency = 0.35
+windowStroke.Transparency = 0.65
 windowStroke.Parent = window
 
 --==================================================
@@ -75,125 +74,137 @@ windowStroke.Parent = window
 
 local topBar = Instance.new("Frame")
 topBar.Name = "TopBar"
-topBar.Size = UDim2.new(1, 0, 0, 48)
-topBar.BackgroundColor3 = PANEL
+topBar.Size = UDim2.new(1, 0, 0, 58)
+topBar.BackgroundColor3 = Color3.fromRGB(20, 20, 24)
+topBar.BackgroundTransparency = 0.08
 topBar.BorderSizePixel = 0
 topBar.Parent = window
 
 local topCorner = Instance.new("UICorner")
-topCorner.CornerRadius = UDim.new(0, 14)
+topCorner.CornerRadius = UDim.new(0, 16)
 topCorner.Parent = topBar
 
--- нижняя оранжевая линия
+-- тонкая оранжевая линия
 
-local orangeLine = Instance.new("Frame")
-orangeLine.AnchorPoint = Vector2.new(0, 1)
-orangeLine.Position = UDim2.new(0, 15, 1, 0)
-orangeLine.Size = UDim2.new(1, -30, 0, 2)
-orangeLine.BackgroundColor3 = ORANGE
-orangeLine.BorderSizePixel = 0
-orangeLine.Parent = topBar
+local accent = Instance.new("Frame")
+accent.AnchorPoint = Vector2.new(0, 1)
+accent.Position = UDim2.new(0, 20, 1, -1)
+accent.Size = UDim2.new(0, 85, 0, 2)
+accent.BackgroundColor3 = ORANGE
+accent.BorderSizePixel = 0
+accent.Parent = topBar
+
+local accentCorner = Instance.new("UICorner")
+accentCorner.CornerRadius = UDim.new(1, 0)
+accentCorner.Parent = accent
 
 --==================================================
 -- TITLE
 --==================================================
 
 local title = Instance.new("TextLabel")
+title.Name = "Title"
 title.Text = "REAL"
-title.Font = Enum.Font.GothamBlack
+title.Font = Enum.Font.GothamBold
 title.TextSize = 20
 title.TextColor3 = Color3.fromRGB(245, 245, 245)
 title.BackgroundTransparency = 1
-title.Position = UDim2.new(0, 18, 0, 7)
-title.Size = UDim2.fromOffset(55, 30)
+title.Position = UDim2.new(0, 20, 0, 8)
+title.Size = UDim2.fromOffset(55, 25)
 title.TextXAlignment = Enum.TextXAlignment.Left
 title.Parent = topBar
 
 local titleOrange = Instance.new("TextLabel")
 titleOrange.Text = "HUB"
-titleOrange.Font = Enum.Font.GothamBlack
+titleOrange.Font = Enum.Font.GothamBold
 titleOrange.TextSize = 20
 titleOrange.TextColor3 = ORANGE
 titleOrange.BackgroundTransparency = 1
-titleOrange.Position = UDim2.new(0, 70, 0, 7)
-titleOrange.Size = UDim2.fromOffset(50, 30)
+titleOrange.Position = UDim2.new(0, 72, 0, 8)
+titleOrange.Size = UDim2.fromOffset(50, 25)
 titleOrange.TextXAlignment = Enum.TextXAlignment.Left
 titleOrange.Parent = topBar
 
+local version = Instance.new("TextLabel")
+version.Text = "v1.0"
+version.Font = Enum.Font.Gotham
+version.TextSize = 10
+version.TextColor3 = Color3.fromRGB(110, 110, 115)
+version.BackgroundTransparency = 1
+version.Position = UDim2.new(0, 20, 0, 32)
+version.Size = UDim2.fromOffset(100, 18)
+version.TextXAlignment = Enum.TextXAlignment.Left
+version.Parent = topBar
+
 --==================================================
--- КНОПКА СВЕРНУТЬ
+-- WINDOW BUTTONS
 --==================================================
 
 local minimizeButton = Instance.new("TextButton")
 minimizeButton.Name = "Minimize"
 minimizeButton.Text = "—"
 minimizeButton.Font = Enum.Font.GothamBold
-minimizeButton.TextSize = 20
-minimizeButton.TextColor3 = Color3.fromRGB(180, 180, 185)
+minimizeButton.TextSize = 18
+minimizeButton.TextColor3 = Color3.fromRGB(160, 160, 165)
 minimizeButton.BackgroundTransparency = 1
-minimizeButton.Position = UDim2.new(1, -72, 0, 7)
-minimizeButton.Size = UDim2.fromOffset(30, 30)
+minimizeButton.Position = UDim2.new(1, -72, 0, 13)
+minimizeButton.Size = UDim2.fromOffset(28, 28)
 minimizeButton.Parent = topBar
-
---==================================================
--- КНОПКА ЗАКРЫТЬ
---==================================================
 
 local closeButton = Instance.new("TextButton")
 closeButton.Name = "Close"
 closeButton.Text = "×"
 closeButton.Font = Enum.Font.Gotham
-closeButton.TextSize = 24
-closeButton.TextColor3 = Color3.fromRGB(180, 180, 185)
+closeButton.TextSize = 23
+closeButton.TextColor3 = Color3.fromRGB(160, 160, 165)
 closeButton.BackgroundTransparency = 1
-closeButton.Position = UDim2.new(1, -38, 0, 7)
-closeButton.Size = UDim2.fromOffset(30, 30)
+closeButton.Position = UDim2.new(1, -39, 0, 12)
+closeButton.Size = UDim2.fromOffset(28, 28)
 closeButton.Parent = topBar
 
 --==================================================
--- КОНТЕНТ
+-- CONTENT
 --==================================================
 
 local content = Instance.new("Frame")
 content.Name = "Content"
-content.Position = UDim2.new(0, 0, 0, 48)
-content.Size = UDim2.new(1, 0, 1, -48)
+content.Position = UDim2.new(0, 0, 0, 58)
+content.Size = UDim2.new(1, 0, 1, -58)
 content.BackgroundTransparency = 1
 content.Parent = window
 
 local heading = Instance.new("TextLabel")
 heading.Text = "Scripts"
 heading.Font = Enum.Font.GothamBold
-heading.TextSize = 22
-heading.TextColor3 = Color3.fromRGB(240, 240, 240)
+heading.TextSize = 19
+heading.TextColor3 = Color3.fromRGB(235, 235, 238)
 heading.BackgroundTransparency = 1
 heading.Position = UDim2.new(0, 22, 0, 20)
-heading.Size = UDim2.new(1, -44, 0, 30)
+heading.Size = UDim2.new(1, -44, 0, 25)
 heading.TextXAlignment = Enum.TextXAlignment.Left
 heading.Parent = content
 
-local subheading = Instance.new("TextLabel")
-subheading.Text = "Select a script to launch"
-subheading.Font = Enum.Font.Gotham
-subheading.TextSize = 12
-subheading.TextColor3 = Color3.fromRGB(120, 120, 125)
-subheading.BackgroundTransparency = 1
-subheading.Position = UDim2.new(0, 22, 0, 50)
-subheading.Size = UDim2.new(1, -44, 0, 22)
-subheading.TextXAlignment = Enum.TextXAlignment.Left
-subheading.Parent = content
+local description = Instance.new("TextLabel")
+description.Text = "Select a module to launch"
+description.Font = Enum.Font.Gotham
+description.TextSize = 11
+description.TextColor3 = Color3.fromRGB(125, 125, 130)
+description.BackgroundTransparency = 1
+description.Position = UDim2.new(0, 22, 0, 47)
+description.Size = UDim2.new(1, -44, 0, 20)
+description.TextXAlignment = Enum.TextXAlignment.Left
+description.Parent = content
 
 --==================================================
--- ЗАГРУЗКА СКРИПТА
+-- SCRIPT LOADER
 --==================================================
 
-local function loadScript(url, scriptName, button)
+local function loadScript(url, name, statusLabel)
+
+	statusLabel.Text = "LOADING..."
+	statusLabel.TextColor3 = ORANGE
+
 	task.spawn(function()
-
-		local oldText = button.Text
-
-		button.Text = "Loading..."
-		button.AutoButtonColor = false
 
 		local success, result = pcall(function()
 
@@ -210,116 +221,136 @@ local function loadScript(url, scriptName, button)
 			end
 
 			return func()
+
 		end)
 
 		if success then
-			print("[RealHub] " .. scriptName .. " loaded")
-			button.Text = "Loaded"
+
+			print("[RealHub] " .. name .. " loaded")
+
+			statusLabel.Text = "LOADED"
+			statusLabel.TextColor3 = Color3.fromRGB(100, 220, 130)
+
 		else
-			warn("[RealHub] " .. scriptName .. " failed:", result)
-			button.Text = "Error"
+
+			warn("[RealHub] " .. name .. " error:", result)
+
+			statusLabel.Text = "ERROR"
+			statusLabel.TextColor3 = Color3.fromRGB(255, 80, 70)
+
 		end
 
-		task.wait(1)
+		task.wait(1.5)
 
-		if button and button.Parent then
-			button.Text = oldText
-			button.AutoButtonColor = true
+		if statusLabel and statusLabel.Parent then
+			statusLabel.Text = "LAUNCH  →"
+			statusLabel.TextColor3 = ORANGE
 		end
 
 	end)
 end
 
 --==================================================
--- СОЗДАНИЕ КНОПКИ
+-- CARD
 --==================================================
 
-local function createScriptButton(name, description, x, url)
+local function createCard(name, shortName, desc, url, x)
 
-	local button = Instance.new("TextButton")
-	button.Name = name
-	button.Text = ""
-	button.AutoButtonColor = false
-	button.BackgroundColor3 = PANEL
-	button.BorderSizePixel = 0
-	button.Position = UDim2.new(x, 0, 0, 92)
-	button.Size = UDim2.fromOffset(225, 150)
-	button.Parent = content
+	local card = Instance.new("TextButton")
+	card.Name = name .. "Card"
+	card.Text = ""
+	card.AutoButtonColor = false
+	card.Position = UDim2.new(x, 0, 0, 82)
+	card.Size = UDim2.fromOffset(245, 175)
+	card.BackgroundColor3 = Color3.fromRGB(22, 22, 26)
+	card.BackgroundTransparency = 0.12
+	card.BorderSizePixel = 0
+	card.Parent = content
 
 	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, 12)
-	corner.Parent = button
+	corner.CornerRadius = UDim.new(0, 13)
+	corner.Parent = card
 
 	local stroke = Instance.new("UIStroke")
-	stroke.Color = Color3.fromRGB(45, 45, 50)
+	stroke.Color = Color3.fromRGB(55, 55, 60)
 	stroke.Thickness = 1
-	stroke.Parent = button
+	stroke.Transparency = 0.25
+	stroke.Parent = card
 
-	-- Иконка
+	-- ICON
 
-	local icon = Instance.new("TextLabel")
-	icon.Text = string.sub(name, 1, 2):upper()
-	icon.Font = Enum.Font.GothamBlack
-	icon.TextSize = 20
-	icon.TextColor3 = ORANGE
-	icon.BackgroundColor3 = ORANGE_DARK
-	icon.BackgroundTransparency = 0
-	icon.Position = UDim2.new(0, 18, 0, 18)
-	icon.Size = UDim2.fromOffset(50, 50)
-	icon.Parent = button
+	local iconFrame = Instance.new("Frame")
+	iconFrame.Position = UDim2.new(0, 18, 0, 18)
+	iconFrame.Size = UDim2.fromOffset(46, 46)
+	iconFrame.BackgroundColor3 = Color3.fromRGB(38, 23, 15)
+	iconFrame.BackgroundTransparency = 0.15
+	iconFrame.BorderSizePixel = 0
+	iconFrame.Parent = card
 
 	local iconCorner = Instance.new("UICorner")
 	iconCorner.CornerRadius = UDim.new(0, 10)
-	iconCorner.Parent = icon
+	iconCorner.Parent = iconFrame
 
-	-- Название
+	local icon = Instance.new("TextLabel")
+	icon.Text = shortName
+	icon.Font = Enum.Font.GothamBold
+	icon.TextSize = 14
+	icon.TextColor3 = ORANGE
+	icon.BackgroundTransparency = 1
+	icon.Size = UDim2.fromScale(1, 1)
+	icon.Parent = iconFrame
 
-	local nameLabel = Instance.new("TextLabel")
-	nameLabel.Text = name
-	nameLabel.Font = Enum.Font.GothamBold
-	nameLabel.TextSize = 17
-	nameLabel.TextColor3 = Color3.fromRGB(245, 245, 245)
-	nameLabel.BackgroundTransparency = 1
-	nameLabel.Position = UDim2.new(0, 18, 0, 78)
-	nameLabel.Size = UDim2.new(1, -36, 0, 24)
-	nameLabel.TextXAlignment = Enum.TextXAlignment.Left
-	nameLabel.Parent = button
+	-- TITLE
 
-	-- Описание
+	local cardTitle = Instance.new("TextLabel")
+	cardTitle.Text = name
+	cardTitle.Font = Enum.Font.GothamBold
+	cardTitle.TextSize = 16
+	cardTitle.TextColor3 = Color3.fromRGB(240, 240, 242)
+	cardTitle.BackgroundTransparency = 1
+	cardTitle.Position = UDim2.new(0, 18, 0, 76)
+	cardTitle.Size = UDim2.new(1, -36, 0, 23)
+	cardTitle.TextXAlignment = Enum.TextXAlignment.Left
+	cardTitle.Parent = card
 
-	local descLabel = Instance.new("TextLabel")
-	descLabel.Text = description
-	descLabel.Font = Enum.Font.Gotham
-	descLabel.TextSize = 11
-	descLabel.TextColor3 = Color3.fromRGB(120, 120, 125)
-	descLabel.BackgroundTransparency = 1
-	descLabel.Position = UDim2.new(0, 18, 0, 104)
-	descLabel.Size = UDim2.new(1, -36, 0, 20)
-	descLabel.TextXAlignment = Enum.TextXAlignment.Left
-	descLabel.Parent = button
+	-- DESCRIPTION
 
-	-- Статус
+	local cardDesc = Instance.new("TextLabel")
+	cardDesc.Text = desc
+	cardDesc.Font = Enum.Font.Gotham
+	cardDesc.TextSize = 11
+	cardDesc.TextColor3 = Color3.fromRGB(125, 125, 130)
+	cardDesc.BackgroundTransparency = 1
+	cardDesc.Position = UDim2.new(0, 18, 0, 104)
+	cardDesc.Size = UDim2.new(1, -36, 0, 25)
+	cardDesc.TextXAlignment = Enum.TextXAlignment.Left
+	cardDesc.Parent = card
 
-	local launchLabel = Instance.new("TextLabel")
-	launchLabel.Text = "LAUNCH  →"
-	launchLabel.Font = Enum.Font.GothamBold
-	launchLabel.TextSize = 10
-	launchLabel.TextColor3 = ORANGE
-	launchLabel.BackgroundTransparency = 1
-	launchLabel.Position = UDim2.new(0, 18, 1, -28)
-	launchLabel.Size = UDim2.new(1, -36, 0, 18)
-	launchLabel.TextXAlignment = Enum.TextXAlignment.Left
-	launchLabel.Parent = button
+	-- LAUNCH
 
-	-- Hover
+	local launch = Instance.new("TextLabel")
+	launch.Text = "LAUNCH  →"
+	launch.Font = Enum.Font.GothamBold
+	launch.TextSize = 10
+	launch.TextColor3 = ORANGE
+	launch.BackgroundTransparency = 1
+	launch.Position = UDim2.new(0, 18, 1, -31)
+	launch.Size = UDim2.new(1, -36, 0, 18)
+	launch.TextXAlignment = Enum.TextXAlignment.Left
+	launch.Parent = card
 
-	button.MouseEnter:Connect(function()
+	--==================================================
+	-- HOVER
+	--==================================================
+
+	card.MouseEnter:Connect(function()
 
 		TweenService:Create(
-			button,
+			card,
 			TweenInfo.new(0.18),
 			{
-				BackgroundColor3 = Color3.fromRGB(27, 23, 20)
+				BackgroundColor3 = Color3.fromRGB(27, 24, 22),
+				BackgroundTransparency = 0.03
 			}
 		):Play()
 
@@ -328,27 +359,28 @@ local function createScriptButton(name, description, x, url)
 			TweenInfo.new(0.18),
 			{
 				Color = ORANGE,
-				Transparency = 0.1
+				Transparency = 0.2
 			}
 		):Play()
 
 		TweenService:Create(
-			icon,
+			iconFrame,
 			TweenInfo.new(0.18),
 			{
-				BackgroundColor3 = Color3.fromRGB(75, 30, 8)
+				BackgroundColor3 = Color3.fromRGB(58, 29, 12)
 			}
 		):Play()
 
 	end)
 
-	button.MouseLeave:Connect(function()
+	card.MouseLeave:Connect(function()
 
 		TweenService:Create(
-			button,
+			card,
 			TweenInfo.new(0.18),
 			{
-				BackgroundColor3 = PANEL
+				BackgroundColor3 = Color3.fromRGB(22, 22, 26),
+				BackgroundTransparency = 0.12
 			}
 		):Play()
 
@@ -356,74 +388,79 @@ local function createScriptButton(name, description, x, url)
 			stroke,
 			TweenInfo.new(0.18),
 			{
-				Color = Color3.fromRGB(45, 45, 50),
-				Transparency = 0
+				Color = Color3.fromRGB(55, 55, 60),
+				Transparency = 0.25
 			}
 		):Play()
 
 		TweenService:Create(
-			icon,
+			iconFrame,
 			TweenInfo.new(0.18),
 			{
-				BackgroundColor3 = ORANGE_DARK
+				BackgroundColor3 = Color3.fromRGB(38, 23, 15)
 			}
 		):Play()
 
 	end)
 
-	-- Click
+	--==================================================
+	-- CLICK
+	--==================================================
 
-	button.MouseButton1Click:Connect(function()
+	card.MouseButton1Click:Connect(function()
 
 		TweenService:Create(
-			button,
+			card,
 			TweenInfo.new(0.07),
 			{
-				Size = UDim2.fromOffset(218, 145)
+				Size = UDim2.fromOffset(238, 169)
 			}
 		):Play()
 
 		task.wait(0.07)
 
 		TweenService:Create(
-			button,
+			card,
 			TweenInfo.new(0.12),
 			{
-				Size = UDim2.fromOffset(225, 150)
+				Size = UDim2.fromOffset(245, 175)
 			}
 		):Play()
 
-		loadScript(url, name, launchLabel)
+		loadScript(url, name, launch)
 
 	end)
 
 end
 
 --==================================================
--- ДВЕ КНОПКИ
+-- CREATE MODULES
 --==================================================
 
-createScriptButton(
+createCard(
 	"San Diego",
-	"San Diego script",
-	0.26,
-	SAN_DIEGO_URL
+	"SD",
+	"San Diego module",
+	SAN_DIEGO_URL,
+	0.24
 )
 
-createScriptButton(
+createCard(
 	"Analiz",
-	"Analiz script",
-	0.74,
-	ANALIZ_URL
+	"AN",
+	"Analiz module",
+	ANALIZ_URL,
+	0.76
 )
 
 --==================================================
--- СВЕРНУТЬ
+-- MINIMIZE
 --==================================================
 
 local minimized = false
-local normalSize = UDim2.fromOffset(520, 340)
-local minimizedSize = UDim2.fromOffset(520, 48)
+
+local normalSize = UDim2.fromOffset(560, 350)
+local minimizedSize = UDim2.fromOffset(560, 58)
 
 minimizeButton.MouseButton1Click:Connect(function()
 
@@ -433,7 +470,7 @@ minimizeButton.MouseButton1Click:Connect(function()
 
 		TweenService:Create(
 			window,
-			TweenInfo.new(0.3, Enum.EasingStyle.Quad),
+			TweenInfo.new(0.28, Enum.EasingStyle.Quad),
 			{
 				Size = minimizedSize
 			}
@@ -458,7 +495,7 @@ minimizeButton.MouseButton1Click:Connect(function()
 end)
 
 --==================================================
--- ЗАКРЫТЬ
+-- CLOSE
 --==================================================
 
 closeButton.MouseButton1Click:Connect(function()
@@ -466,43 +503,76 @@ closeButton.MouseButton1Click:Connect(function()
 	TweenService:Create(
 		window,
 		TweenInfo.new(
-			0.25,
-			Enum.EasingStyle.Back,
+			0.22,
+			Enum.EasingStyle.Quad,
 			Enum.EasingDirection.In
 		),
 		{
-			Size = UDim2.fromOffset(450, 40)
+			Size = UDim2.fromOffset(520, 40),
+			BackgroundTransparency = 1
 		}
 	):Play()
 
-	task.wait(0.25)
+	task.wait(0.23)
 
 	gui:Destroy()
 
 end)
 
 --==================================================
--- HOVER КНОПОК ОКНА
+-- BUTTON HOVER
 --==================================================
 
 minimizeButton.MouseEnter:Connect(function()
-	minimizeButton.TextColor3 = ORANGE
+
+	TweenService:Create(
+		minimizeButton,
+		TweenInfo.new(0.15),
+		{
+			TextColor3 = ORANGE
+		}
+	):Play()
+
 end)
 
 minimizeButton.MouseLeave:Connect(function()
-	minimizeButton.TextColor3 = Color3.fromRGB(180, 180, 185)
+
+	TweenService:Create(
+		minimizeButton,
+		TweenInfo.new(0.15),
+		{
+			TextColor3 = Color3.fromRGB(160, 160, 165)
+		}
+	):Play()
+
 end)
 
 closeButton.MouseEnter:Connect(function()
-	closeButton.TextColor3 = Color3.fromRGB(255, 70, 50)
+
+	TweenService:Create(
+		closeButton,
+		TweenInfo.new(0.15),
+		{
+			TextColor3 = Color3.fromRGB(255, 70, 60)
+		}
+	):Play()
+
 end)
 
 closeButton.MouseLeave:Connect(function()
-	closeButton.TextColor3 = Color3.fromRGB(180, 180, 185)
+
+	TweenService:Create(
+		closeButton,
+		TweenInfo.new(0.15),
+		{
+			TextColor3 = Color3.fromRGB(160, 160, 165)
+		}
+	):Play()
+
 end)
 
 --==================================================
--- ПЕРЕТАСКИВАНИЕ
+-- DRAG
 --==================================================
 
 local dragging = false
@@ -551,19 +621,21 @@ UserInputService.InputChanged:Connect(function(input)
 end)
 
 --==================================================
--- ПОЯВЛЕНИЕ
+-- OPEN ANIMATION
 --==================================================
 
-window.Size = UDim2.fromOffset(480, 300)
+window.Size = UDim2.fromOffset(500, 310)
+window.BackgroundTransparency = 1
 
 TweenService:Create(
 	window,
 	TweenInfo.new(
-		0.4,
+		0.35,
 		Enum.EasingStyle.Back,
 		Enum.EasingDirection.Out
 	),
 	{
-		Size = normalSize
+		Size = normalSize,
+		BackgroundTransparency = 0.12
 	}
 ):Play()
