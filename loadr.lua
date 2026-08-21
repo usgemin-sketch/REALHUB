@@ -1,20 +1,14 @@
--- LocalScript: LoginScreen
--- Расположение: StarterPlayerScripts (или StarterGui)
-
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 
 local player = Players.LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 
--- ============ НАСТРОЙКИ ============
 local ADMIN_PASSWORD = "MySecretPassword123"
 
-local REALHUB_URL = "https://raw.githubusercontent.com/usgemin-sketch/REALHUB/refs/heads/main/real.lua"
--- ====================================
+local REALHUB_URL =
+	"https://raw.githubusercontent.com/usgemin-sketch/REALHUB/refs/heads/main/real.lua"
 
-
--- ===================== ScreenGui =====================
 
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "LoginGui"
@@ -78,15 +72,14 @@ passwordBox.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
 passwordBox.BackgroundTransparency = 1
 passwordBox.TextTransparency = 1
 passwordBox.ClearTextOnFocus = false
-passwordBox.TextEditable = true
 passwordBox.Size = UDim2.new(1, -48, 0, 44)
 passwordBox.Position = UDim2.new(0, 24, 0, 74)
 passwordBox.Parent = loginCard
 
 
-local passwordBoxCorner = Instance.new("UICorner")
-passwordBoxCorner.CornerRadius = UDim.new(0, 10)
-passwordBoxCorner.Parent = passwordBox
+local passwordCorner = Instance.new("UICorner")
+passwordCorner.CornerRadius = UDim.new(0, 10)
+passwordCorner.Parent = passwordBox
 
 
 local loginButton = Instance.new("TextButton")
@@ -120,10 +113,9 @@ errorLabel.Position = UDim2.new(0, 0, 0, 184)
 errorLabel.Parent = loginCard
 
 
--- ===================== АНИМАЦИИ =====================
-
 local function fadeInLogin()
-	local tweenInfo = TweenInfo.new(
+
+	local info = TweenInfo.new(
 		0.5,
 		Enum.EasingStyle.Quad,
 		Enum.EasingDirection.Out
@@ -131,19 +123,19 @@ local function fadeInLogin()
 
 	TweenService:Create(
 		loginFrame,
-		tweenInfo,
+		info,
 		{BackgroundTransparency = 0.15}
 	):Play()
 
 	TweenService:Create(
 		loginCard,
-		tweenInfo,
+		info,
 		{BackgroundTransparency = 0}
 	):Play()
 
 	TweenService:Create(
 		loginStroke,
-		tweenInfo,
+		info,
 		{Transparency = 0.4}
 	):Play()
 
@@ -151,7 +143,7 @@ local function fadeInLogin()
 
 	TweenService:Create(
 		loginTitle,
-		tweenInfo,
+		info,
 		{TextTransparency = 0}
 	):Play()
 
@@ -159,7 +151,7 @@ local function fadeInLogin()
 
 	TweenService:Create(
 		passwordBox,
-		tweenInfo,
+		info,
 		{
 			BackgroundTransparency = 0,
 			TextTransparency = 0
@@ -170,7 +162,7 @@ local function fadeInLogin()
 
 	TweenService:Create(
 		loginButton,
-		tweenInfo,
+		info,
 		{
 			BackgroundTransparency = 0,
 			TextTransparency = 0
@@ -180,21 +172,20 @@ end
 
 
 local function showError()
+
 	errorLabel.TextTransparency = 0
 
 	local originalPosition = loginCard.Position
 
-	local shakeInfo = TweenInfo.new(
-		0.05,
-		Enum.EasingStyle.Linear,
-		Enum.EasingDirection.Out,
-		3,
-		true
-	)
-
 	TweenService:Create(
 		loginCard,
-		shakeInfo,
+		TweenInfo.new(
+			0.05,
+			Enum.EasingStyle.Linear,
+			Enum.EasingDirection.Out,
+			3,
+			true
+		),
 		{
 			Position = originalPosition + UDim2.new(0, 8, 0, 0)
 		}
@@ -211,53 +202,38 @@ end
 
 
 local function fadeOutLogin()
-	local tweenInfo = TweenInfo.new(
+
+	local info = TweenInfo.new(
 		0.4,
 		Enum.EasingStyle.Quad,
 		Enum.EasingDirection.In
 	)
 
-	TweenService:Create(
-		loginCard,
-		tweenInfo,
-		{BackgroundTransparency = 1}
-	):Play()
+	TweenService:Create(loginCard, info, {
+		BackgroundTransparency = 1
+	}):Play()
 
-	TweenService:Create(
-		loginStroke,
-		tweenInfo,
-		{Transparency = 1}
-	):Play()
+	TweenService:Create(loginStroke, info, {
+		Transparency = 1
+	}):Play()
 
-	TweenService:Create(
-		loginTitle,
-		tweenInfo,
-		{TextTransparency = 1}
-	):Play()
+	TweenService:Create(loginTitle, info, {
+		TextTransparency = 1
+	}):Play()
 
-	TweenService:Create(
-		passwordBox,
-		tweenInfo,
-		{
-			BackgroundTransparency = 1,
-			TextTransparency = 1
-		}
-	):Play()
+	TweenService:Create(passwordBox, info, {
+		BackgroundTransparency = 1,
+		TextTransparency = 1
+	}):Play()
 
-	TweenService:Create(
-		loginButton,
-		tweenInfo,
-		{
-			BackgroundTransparency = 1,
-			TextTransparency = 1
-		}
-	):Play()
+	TweenService:Create(loginButton, info, {
+		BackgroundTransparency = 1,
+		TextTransparency = 1
+	}):Play()
 
-	TweenService:Create(
-		loginFrame,
-		tweenInfo,
-		{BackgroundTransparency = 1}
-	):Play()
+	TweenService:Create(loginFrame, info, {
+		BackgroundTransparency = 1
+	}):Play()
 
 	task.wait(0.4)
 
@@ -265,50 +241,55 @@ local function fadeOutLogin()
 end
 
 
--- ===================== ЛОГИКА ВХОДА =====================
-
 local loggingIn = false
 
 local function attemptLogin()
+
 	if loggingIn then
 		return
 	end
 
-	local entered = passwordBox.Text
+	if passwordBox.Text == ADMIN_PASSWORD then
 
-	if entered == ADMIN_PASSWORD then
 		loggingIn = true
 
-		-- Сначала убираем окно входа
-		fadeOutLogin()
-
-		-- Затем загружаем RealHub
+		-- Сначала загружаем RealHub
 		local success, result = pcall(function()
-			return loadstring(
-				game:HttpGet(REALHUB_URL)
-			)()
+
+			local source = game:HttpGet(REALHUB_URL)
+
+			local func, compileError = loadstring(source)
+
+			if not func then
+				error(compileError)
+			end
+
+			return func()
 		end)
 
-		if not success then
+		-- Убираем окно только после успешной загрузки
+		if success then
+			fadeOutLogin()
+		else
+			loggingIn = false
 			warn("[RealHub] Ошибка загрузки:", result)
 		end
+
 	else
 		showError()
 	end
 end
 
 
--- ===================== КНОПКИ =====================
-
 loginButton.MouseButton1Click:Connect(attemptLogin)
 
 passwordBox.FocusLost:Connect(function(enterPressed)
+
 	if enterPressed then
 		attemptLogin()
 	end
+
 end)
 
-
--- ===================== ЗАПУСК =====================
 
 fadeInLogin()
